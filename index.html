@@ -7,14 +7,27 @@
 </head>
 <body>
 	<div class="container">
-		<div id = "list">
-			
-		</div>
-
-		<div id="map" >
-		</div>
+		<div id="list"></div>
+		<div id="map" ></div>
+		<!-- Initialize Map. Code from Google API page -->
+		<script>
+			function initMap() {
+				var lbss = {lat: 38.803397, lng: -77.265172}; 
+				var map = new google.maps.Map(document.getElementById('map'), {
+					zoom: 16,
+					center: lbss
+				});
+				var marker = new google.maps.Marker({
+					position: lbss,
+					map: map
+				});
+			}
+		</script>
 	</div>
 	<script src="js/lib/knockout-3.2.0.js"></script>
 	<script src="js/app.js"></script>
+	<script async defer
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoIsa3nKc32WfrOR07mHu0C_eOWPX44Sg&callback=initMap">
+	</script>
 </body>
 </html>
