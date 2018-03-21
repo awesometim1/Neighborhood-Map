@@ -1,17 +1,49 @@
 body{
 	margin:0;
+	background-color:black;
+}
+.nav{
+	width:100%;
+	height:5vh;
+	background-color: black;
+	color:#77c9d4;
+}
+#title{
+	line-height:5vh;
+	padding-left:2%;
+	font-family:"Verdana";
 }
 .container{
 	display:flex;
 	margin:0;
-
+	flex-direction:row;
+	padding:1% 1%;
 }
 #map{
-	height:100vh;
+	height:95vh;
 	width:70%;
-	order:1;
 	margin:0 auto;
 }
 #list{
 	width:30%;
+	background-color:lightgrey;
 }
+@media screen and (max-width:600px) {
+	body{
+		padding:0px 2%;
+	}
+	.container{
+		flex-direction:column;
+	}
+	#map{
+		width:100%;
+		height:50vh;
+	}
+	#list{
+		margin-top:1vh;
+		width:100%;
+		height:44vh;
+		order:1;
+		padding:0px;
+	}
+} 
