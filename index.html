@@ -15,22 +15,32 @@
 		<!-- Initialize Map. Code from Google API page -->
 		<script>
 			function initMap() {
-				var lbss = {lat: 38.803397, lng: -77.265172}; 
+				var markers = [];
+				var bounds = new google.maps.LatLngBounds();
+				var ca = {lat: 34.052235, lng: -118.243683};
 				var map = new google.maps.Map(document.getElementById('map'), {
-					zoom: 16,
-					center: lbss
+					zoom: 12,
+					center: ca
 				});
-				var marker = new google.maps.Marker({
-					position: lbss,
-					map: map
-				});
+				if (localStorage.rArr){
+					JSON.parse(localStorage.rArr).forEach(function(el){
+						var marker = new google.maps.Marker({
+							position: el.position,
+							map: map
+						});
+						bounds.extend(marker.getPosition());
+					});
+				}
+				map.fitBounds(bounds);
 			}
 		</script>
 	</div>
+	<!-- Initialize Database -->
+	<script src="js/init.js"></script>
 	<script src="js/lib/knockout-3.2.0.js"></script>
-	<script src="js/app.js"></script>
+	<!-- <script src="js/app.js"></script> -->
 	<script async defer
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoIsa3nKc32WfrOR07mHu0C_eOWPX44Sg&callback=initMap">
-	</script>
+</script>
 </body>
 </html>
