@@ -10,7 +10,13 @@
 		<span id="title">Neighborhood Map</span>
 	</div>
 	<div class="container">
-		<div id="list"></div>
+		<div id="list">
+			<div class="filter">
+				<input type="text" id="finput">
+				<button id="fbutton"><i class="fas fa-filter"></i> <strong>Filter</strong></button>
+			</div>
+			<ul class="restaurants"></ul>
+		</div>
 		<div id="map" ></div>
 		<!-- Initialize Map. Code from Google API page -->
 		<script>
@@ -22,6 +28,7 @@
 					zoom: 12,
 					center: ca
 				});
+				// If localStorage has the address array, make a marker for each address and add to bounds
 				if (localStorage.rArr){
 					JSON.parse(localStorage.rArr).forEach(function(el){
 						var marker = new google.maps.Marker({
@@ -31,6 +38,7 @@
 						bounds.extend(marker.getPosition());
 					});
 				}
+				// Adjust the map zoom level so that all the markers are showing
 				map.fitBounds(bounds);
 			}
 		</script>
@@ -42,5 +50,8 @@
 	<script async defer
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoIsa3nKc32WfrOR07mHu0C_eOWPX44Sg&callback=initMap">
 </script>
+<!-- Font Awesome -->
+<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/solid.js" integrity="sha384-+Ga2s7YBbhOD6nie0DzrZpJes+b2K1xkpKxTFFcx59QmVPaSA8c7pycsNaFwUK6l" crossorigin="anonymous"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/fontawesome.js" integrity="sha384-7ox8Q2yzO/uWircfojVuCQOZl+ZZBg2D2J5nkpLqzH1HY0C1dHlTKIbpRz/LG23c" crossorigin="anonymous"></script>
 </body>
 </html>
