@@ -1,30 +1,68 @@
-var initialCats = [
+var initialMarkers = [
 	{
-		clickCount : 0,
-		growthStage : 'Infant',
-		name : 'Tabby',
-		imgSrc :'img/434164568_fea0ad4013_z.jpg',
-		nicknames : ['kitty', 'bitty', 'witty', 'kitten', 'tabby']
+		name:"Chickfila",
+		position: {lat:34.016716,lng:-118.282515},
+		map:map,
 	},
 	{
-		clickCount : 0,
-		growthStage : 'Infant',
-		name : 'Scaredy',
-		imgSrc :'img/22252709_010df3379e_z.jpg',
-		nicknames : ['Casper', 'scaredycat']
+		name:"Wendy's",
+		position: {lat:34.098219,lng:-118.345304},
+		map:map,
 	},
 	{
-		clickCount : 0,
-		growthStage : 'Infant',
-		name : 'Shadow',
-		imgSrc :'img/1413379559_412a540d29_z.jpg',
-		nicknames : ['Shooby', 'Shady']
+		name:"Chickfila",
+		position: {lat:34.097752,lng:-118.338227},
+		map:map,
 	},
-
+	{
+		name:"Wendy's",
+		position: {lat:34.095880,lng:-118.292150},
+		map:map,
+	},
+	{
+		name:"Chickfila",
+		position: {lat:34.063535,lng:-118.445158},
+		map:map,
+	},
+	{
+		name:"Wendy's",
+		position: {lat:33.971157,lng:-118.378403},
+		map:map,
+	},
+	{
+		name:"McDonald's",
+		position: {lat:34.070610,lng:-118.268148},
+		map:map,
+	},
+	{
+		name:"Burger King",
+		position: {lat:34.116447,lng:-118.184719},
+		map:map,
+	},
+	{
+		name:"McDonald's",
+		position: {lat:34.083109,lng:-118.222829},
+		map:map,
+	},
+	{
+		name:"Taco Bell",
+		position: {lat:34.062735,lng:-118.446710},
+		map:map,
+	},
+	{
+		name:"KFC",
+		position: {lat:34.030178,lng:-118.199137},
+		map:map,
+	},
+	{
+		name:"Jack In The Box",
+		position: {lat:34.114704,lng:-118.182959},
+		map:map,
+	},
 ]
 
 
-var Cat = function(data){
+var marker = function(data){
 
 	this.clickCount = ko.observable(data.clickCount);
 	this.name = ko.observable(data.name);
