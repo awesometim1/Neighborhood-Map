@@ -13,9 +13,11 @@
 		<div id="list">
 			<div class="filter">
 				<input type="text" id="finput">
-				<button id="fbutton"><i class="fas fa-filter"></i> <strong>Filter</strong></button>
+				<button id="fbutton" type="button" data-bind="click: filterCats"><i class="fas fa-filter"></i> <strong>Filter</strong></button>
 			</div>
-			<ul class="restaurants"></ul>
+			<ul class="restaurants" data-bind="foreach: rList">
+				<li class="ritem" data-bind="text: name"></li>
+			</ul>
 		</div>
 		<div id="map" ></div>
 		<!-- Initialize Map. Code from Google API page -->
@@ -46,7 +48,7 @@
 	<!-- Initialize Database -->
 	<script src="js/init.js"></script>
 	<script src="js/lib/knockout-3.2.0.js"></script>
-	<!-- <script src="js/app.js"></script> -->
+	<script src="js/app.js"></script>
 	<script async defer
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoIsa3nKc32WfrOR07mHu0C_eOWPX44Sg&callback=initMap">
 </script>
