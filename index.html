@@ -16,14 +16,13 @@
 				<button id="fbutton" type="button" data-bind="click: filterCats"><i class="fas fa-filter"></i> <strong>Filter</strong></button>
 			</div>
 			<ul class="restaurants" data-bind="foreach: rList">
-				<li class="ritem" data-bind="text: name"></li>
+				<li class="ritem" data-bind="text: name, click: "></li>
 			</ul>
 		</div>
 		<div id="map" ></div>
 		<!-- Initialize Map. Code from Google API page -->
 		<script>
 			function initMap() {
-				var markers = [];
 				var bounds = new google.maps.LatLngBounds();
 				var ca = {lat: 34.052235, lng: -118.243683};
 				var map = new google.maps.Map(document.getElementById('map'), {

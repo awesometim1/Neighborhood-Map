@@ -22,6 +22,18 @@ body{
 	box-sizing:border-box;
 	display:flex;
 }
+.restaurants{
+	list-style-type:none;
+	padding: 0;
+}
+.ritem{
+	text-align: center;
+	color:white;
+	margin: 2%;
+	padding:2% 0px;
+	background-color:black;
+
+}
 #finput{
 	height:30px;
 	width:70%;
@@ -73,3 +85,8 @@ body{
 		padding:0px;
 	}
 } 
+li:hover{
+	background-color:white;
+	color:black;
+	font-weight:bold;
+}
