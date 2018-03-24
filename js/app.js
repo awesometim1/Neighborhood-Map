@@ -45,16 +45,16 @@ var foursquareJSON = function(lat,lng,index){
 		url: url,
 		dataType: "json"
 	}).done(function(data){
-		let info = data.response.venues[0]
+		let info = data.response.venues[0];
 		var content = "<div>" + info.name + "</div>" + "<div>"+ info.location.formattedAddress + "</div>" + "<div>" + info.url + "</div>";
 		callback(content,index);
 	}).fail(function(data){
 		console.log('Error:' + data.status + ' ' + data.statusText);
 		var content = '<div>Unable to access FourSquare API</div>';
 		callback(content,index);
-	})
+	});
 
-}
+};
 
 // Callback function for the async requests. Builds the click listeners on the Markers
 function callback(cont,ind){
@@ -70,7 +70,7 @@ function callback(cont,ind){
 			marker.setAnimation(google.maps.Animation.BOUNCE);
 		}
 		if (infowindow.getMap()) {
-			infowindow.close()
+			infowindow.close();
 		}
 		else {
 			infowindow.open(map, marker);
@@ -93,7 +93,7 @@ var ListItem = function(marker, index){
 		else {
 			marker.setAnimation(google.maps.Animation.BOUNCE);
 		}
-	}
+	};
 };
 
 var ViewModel = function(){
@@ -118,12 +118,12 @@ var ViewModel = function(){
 				if (marker.name().indexOf(inputBox) == -1){
 					delMarkers.push(marker);
 				}
-			})
+			});
 			removeMarkers(delMarkers, self.rList);
 			loadMarkers(indexList(self.rList));
 		}
 
-	}
+	};
 
 };
 
@@ -132,9 +132,9 @@ var indexList = function(list){
 	var indexList = [];
 	list().forEach(function(el){
 		indexList.push(el.index);
-	})
+	});
 	return indexList;
-}
+};
 
 // Function to load the filtered markers into the map and adjust bounds accordingly
 var loadMarkers = function(iList){
@@ -162,14 +162,14 @@ var insMarkers = function(list){
 	allMarkers.forEach(function(marker){
 		list.push(new ListItem(marker,index));
 		index++;
-	})
+	});
 };
 
 // Function to remove markers from the ko.observablearray
 var removeMarkers = function(mList, rList){
 	mList.forEach(function(marker){
 		rList.remove(marker);
-	})
+	});
 };
 
 ko.applyBindings(new ViewModel());
