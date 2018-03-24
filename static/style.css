@@ -34,6 +34,11 @@ body{
 	background-color:black;
 	cursor:pointer;
 }
+#attribution{
+	float:right;
+	line-height:5vh;
+	padding-right:2%;
+}
 #finput{
 	height:30px;
 	width:70%;
