@@ -5,6 +5,8 @@ var map;
 function initMap(){
 	var bounds = new google.maps.LatLngBounds();
 	var ca = {lat: 34.052235, lng: -118.243683};
+	// Index for keeping track of which marker to add click listener to in callback function
+	var index = 0;
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 12,
 		center: ca
@@ -17,24 +19,10 @@ function initMap(){
 				map: map
 			});
 			bounds.extend(marker.getPosition());
-			var infowindow = new google.maps.InfoWindow({
-				content: el.name
-			});
-			marker.addListener('click', function(){
-				if (marker.getAnimation()) {
-					marker.setAnimation(null);
-				} 
-				else {
-					marker.setAnimation(google.maps.Animation.BOUNCE);
-				}
-				if (infowindow.getMap()) {
-					infowindow.close()
-				} 
-				else {
-					infowindow.open(map, marker);
-				}
-			});
+			//Make the ajax request
+			foursquareJSON(marker.getPosition().lat(), marker.getPosition().lng(), index);
 			markers.push(marker);
+			index++;
 		});
 	}
 	// Adjust the map zoom level so that all the markers are showing
@@ -42,6 +30,54 @@ function initMap(){
 		map.fitBounds(bounds);
 	}
 }
+
+// Ajax request to the Foursquare API to obtain venue information.
+var foursquareJSON = function(lat,lng,index){
+	var self = this;
+
+	var url = "https://api.foursquare.com/v2/venues/search?ll=";
+	url+=lat+","+lng;
+	url+="&client_id=WWPUQU1YXSKSZMYZ3LHTJRGHNIZMVN04AC3WDUZKFHTL3QT0";
+	url+="&client_secret=BN0JICWRHSLLR1Z1TFQTW2V2APW2MJ43SVIB30HQW1TB12C2";
+	url+="&v=20180323";
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "json"
+	}).done(function(data){
+		let info = data.response.venues[0]
+		var content = "<div>" + info.name + "</div>" + "<div>"+ info.location.formattedAddress + "</div>" + "<div>" + info.url + "</div>";
+		callback(content,index);
+	}).fail(function(data){
+		console.log('Error:' + data.status + ' ' + data.statusText);
+		var content = '<div>Unable to access FourSquare API</div>';
+		callback(content,index);
+	})
+
+}
+
+// Callback function for the async requests. Builds the click listeners on the Markers
+function callback(cont,ind){
+	var marker = markers[ind];
+	var infowindow = new google.maps.InfoWindow({
+		content: cont
+	});
+	marker.addListener('click', function(){
+		if (marker.getAnimation()) {
+			marker.setAnimation(null);
+		}
+		else {
+			marker.setAnimation(google.maps.Animation.BOUNCE);
+		}
+		if (infowindow.getMap()) {
+			infowindow.close()
+		}
+		else {
+			infowindow.open(map, marker);
+		}
+	});
+}
+
 var ListItem = function(marker, index){
 
 	var self = this;
@@ -53,7 +89,7 @@ var ListItem = function(marker, index){
 		var marker = markers[self.index];
 		if (marker.getAnimation()) {
 			marker.setAnimation(null);
-		} 
+		}
 		else {
 			marker.setAnimation(google.maps.Animation.BOUNCE);
 		}
@@ -86,7 +122,7 @@ var ViewModel = function(){
 			removeMarkers(delMarkers, self.rList);
 			loadMarkers(indexList(self.rList));
 		}
-		
+
 	}
 
 };
@@ -104,7 +140,7 @@ var indexList = function(list){
 var loadMarkers = function(iList){
 	var bounds = new google.maps.LatLngBounds();
 	for (var i =0; i < markers.length; i++){
-		if(iList.includes(i)){
+		if(iList.length < 1 || iList.includes(i)){
 			markers[i].setVisible(true);
 			bounds.extend(markers[i].getPosition());
 		}

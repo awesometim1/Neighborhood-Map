@@ -26,8 +26,8 @@ if(!localStorage.rArr){
 		map:map,
 	},
 	{
-		name:"Wendy's",
-		position: {lat:33.971157,lng:-118.378403},
+		name:"In-N-Out Burger",
+		position: {lat:33.953679,lng:-118.396679},
 		map:map,
 	},
 	{
@@ -46,8 +46,8 @@ if(!localStorage.rArr){
 		map:map,
 	},
 	{
-		name:"Taco Bell",
-		position: {lat:34.062735,lng:-118.446710},
+		name:"In-N-Out Burger",
+		position: {lat:34.063071,lng:-118.448026},
 		map:map,
 	},
 	{
