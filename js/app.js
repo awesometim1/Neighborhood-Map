@@ -1,15 +1,18 @@
 var allMarkers = [JSON.parse(localStorage.rArr)][0];
-var markers = [];
+var liArr = [];
 var map;
+var infowindow;
 // Initialize the Map
 function initMap(){
 	var bounds = new google.maps.LatLngBounds();
 	var ca = {lat: 34.052235, lng: -118.243683};
-	// Index for keeping track of which marker to add click listener to in callback function
-	var index = 0;
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 12,
 		center: ca
+	});
+	//Initialize infowindow
+	infowindow = new google.maps.InfoWindow({
+		content: "Empty"
 	});
 	// If localStorage has the address array, make a marker for each address and add to bounds
 	if (localStorage.rArr){
@@ -19,80 +22,81 @@ function initMap(){
 				map: map
 			});
 			bounds.extend(marker.getPosition());
-			//Make the ajax request
-			foursquareJSON(marker.getPosition().lat(), marker.getPosition().lng(), index);
-			markers.push(marker);
-			index++;
+			//Make a ListItem object for each marker and store the marker object to it
+			liArr.push(new ListItem(el, marker));
 		});
 	}
 	// Adjust the map zoom level so that all the markers are showing
 	if (!bounds.isEmpty()){
 		map.fitBounds(bounds);
 	}
+	loadMarkers(liArr);
 }
 
 // Ajax request to the Foursquare API to obtain venue information.
-var foursquareJSON = function(lat,lng,index){
+var foursquareJSON = function(lat,lng,liObj){
 	var self = this;
 
+	var content = "";
 	var url = "https://api.foursquare.com/v2/venues/search?ll=";
 	url+=lat+","+lng;
 	url+="&client_id=WWPUQU1YXSKSZMYZ3LHTJRGHNIZMVN04AC3WDUZKFHTL3QT0";
 	url+="&client_secret=BN0JICWRHSLLR1Z1TFQTW2V2APW2MJ43SVIB30HQW1TB12C2";
 	url+="&v=20180323";
+	//ajax call to get the data and send it to a callback function
 	$.ajax({
 		type: "GET",
 		url: url,
 		dataType: "json"
 	}).done(function(data){
 		let info = data.response.venues[0];
-		var content = "<div>" + info.name + "</div>" + "<div>"+ info.location.formattedAddress + "</div>" + "<div>" + info.url + "</div>";
-		callback(content,index);
+		content = "<div>" + info.name + "</div>" + "<div>"+ info.location.formattedAddress + "</div>" + "<div>" + info.url + "</div>";
+		callback(content,liObj);
 	}).fail(function(data){
 		console.log('Error:' + data.status + ' ' + data.statusText);
-		var content = '<div>Unable to access FourSquare API</div>';
-		callback(content,index);
+		content = '<div>Unable to access FourSquare API</div>';
+		callback(content,liObj);
 	});
 
 };
 
-// Callback function for the async requests. Builds the click listeners on the Markers
-function callback(cont,ind){
-	var marker = markers[ind];
-	var infowindow = new google.maps.InfoWindow({
-		content: cont
-	});
-	marker.addListener('click', function(){
-		if (marker.getAnimation()) {
-			marker.setAnimation(null);
-		}
-		else {
-			marker.setAnimation(google.maps.Animation.BOUNCE);
-		}
-		if (infowindow.getMap()) {
-			infowindow.close();
-		}
-		else {
-			infowindow.open(map, marker);
-		}
-	});
+// Callback function for the async requests. Sets content for ListItem Object and opens infowindow accordingly
+function callback(cont,liObj){
+	liObj.content = cont;
+	infowindow.setContent(liObj.content);
+	infowindow.open(map, liObj.marker);
 }
 
-var ListItem = function(marker, index){
+var ListItem = function(marker, mObj){
 
 	var self = this;
 
-	this.name = ko.observable(marker.name);
-	this.index = index;
+	self.name = ko.observable(marker.name);
+	self.marker = mObj;
+	self.content = "";
 
-	this.toggleClick = function(){
-		var marker = markers[self.index];
-		if (marker.getAnimation()) {
+	//Add click listener to the marker doing two things: 1. open infowindow 2. set animation
+	self.marker.addListener('click', function(){
+		if (self.content.length < 1){
+			foursquareJSON(self.marker.getPosition().lat(), self.marker.getPosition().lng(), self);
+		}
+		else{
+			infowindow.setContent(self.content);
+			infowindow.open(map, self.marker);
+		}
+		let marker = self.marker;
+		marker.setAnimation(google.maps.Animation.BOUNCE);
+		setTimeout(function(){
 			marker.setAnimation(null);
-		}
-		else {
-			marker.setAnimation(google.maps.Animation.BOUNCE);
-		}
+		}, 500)
+	});
+
+	self.toggleClick = function(){
+		let marker = self.marker;
+		marker.setAnimation(google.maps.Animation.BOUNCE);
+		setTimeout(function(){
+			marker.setAnimation(null);
+		}, 500)
 	};
 };
 
@@ -100,76 +104,64 @@ var ViewModel = function(){
 
 	var self = this;
 
-	this.rList = ko.observableArray([]);
+	self.vmList = ko.observableArray([]);
 
-	insMarkers(self.rList);
+	self.textVal = ko.observable("");
 
 	// Function to filter the list. Makes use of external functions loadMarkers, insMarkers, and removeMarkers
-	this.filterList = function(name){
-		var inputBox = document.getElementById("finput").value;
-		if (inputBox.length < 1){
-			insMarkers(self.rList);
-			loadMarkers(self.rList);
-		}
-		else{
-			var delMarkers = [];
-			insMarkers(self.rList);
-			self.rList().forEach(function(marker){
-				if (marker.name().indexOf(inputBox) == -1){
-					delMarkers.push(marker);
+	self.filterList = function(){
+		let textVal = self.textVal();
+		insList(self.vmList);
+		if (textVal.length > 0){
+			for (var i = self.vmList().length-1; i >= 0; i--){
+				if (self.vmList()[i].name().indexOf(textVal) < 0){
+					self.vmList.remove(self.vmList()[i]);
 				}
-			});
-			removeMarkers(delMarkers, self.rList);
-			loadMarkers(indexList(self.rList));
+			};
 		}
+		loadMarkers(self.vmList);
 
 	};
 
 };
 
-// Function to make a list of names from ko.observablearray
-var indexList = function(list){
-	var indexList = [];
-	list().forEach(function(el){
-		indexList.push(el.index);
+//Instantiate Markers
+var insList = function(list){
+	list.removeAll();
+	liArr.forEach(function(li){
+		list.push(li);
 	});
-	return indexList;
 };
 
+
 // Function to load the filtered markers into the map and adjust bounds accordingly
-var loadMarkers = function(iList){
+function loadMarkers(list){
 	var bounds = new google.maps.LatLngBounds();
-	for (var i =0; i < markers.length; i++){
-		if(iList.length < 1 || iList.includes(i)){
-			markers[i].setVisible(true);
-			bounds.extend(markers[i].getPosition());
+	liArr.forEach(function(el){
+		if (list.indexOf(el) >= 0){
+			el.marker.setVisible(true);
+			bounds.extend(el.marker.getPosition());
 		}
-		else{
-			markers[i].setVisible(false);
+		else {
+			el.marker.setVisible(false);
 		}
-	}
+	})
 	// Adjust the map zoom level so that all the markers are showing
 	if (!bounds.isEmpty()){
 		map.fitBounds(bounds);
 	}
+	if(app.viewModel.vmList().length < 1){
+		insList(app.viewModel.vmList);
+	}
 
 };
 
-// Function to insert markers into the ko.observablearray
-var insMarkers = function(list){
-	list.removeAll();
-	var index = 0;
-	allMarkers.forEach(function(marker){
-		list.push(new ListItem(marker,index));
-		index++;
+//StackOverflow answer for finding if two arrays have same object
+var findOne = function (haystack, arr) {
+	return arr.some(function (v) {
+		return haystack.indexOf(v) >= 0;
 	});
 };
 
-// Function to remove markers from the ko.observablearray
-var removeMarkers = function(mList, rList){
-	mList.forEach(function(marker){
-		rList.remove(marker);
-	});
-};
-
-ko.applyBindings(new ViewModel());
+var app = { viewModel: new ViewModel() };
+ko.applyBindings(app.viewModel);
