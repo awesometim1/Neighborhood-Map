@@ -1,9 +1,9 @@
-var allMarkers = [JSON.parse(localStorage.rArr)][0];
 var liArr = [];
 var map;
 var infowindow;
 // Initialize the Map
 function initMap(){
+
 	var bounds = new google.maps.LatLngBounds();
 	var ca = {lat: 34.052235, lng: -118.243683};
 	map = new google.maps.Map(document.getElementById('map'), {
@@ -35,7 +35,6 @@ function initMap(){
 
 // Ajax request to the Foursquare API to obtain venue information.
 var foursquareJSON = function(lat,lng,liObj){
-	var self = this;
 
 	var content = "";
 	var url = "https://api.foursquare.com/v2/venues/search?ll=";
@@ -62,6 +61,7 @@ var foursquareJSON = function(lat,lng,liObj){
 
 // Callback function for the async requests. Sets content for ListItem Object and opens infowindow accordingly
 function callback(cont,liObj){
+
 	liObj.content = cont;
 	infowindow.setContent(liObj.content);
 	infowindow.open(map, liObj.marker);
@@ -88,17 +88,28 @@ var ListItem = function(marker, mObj){
 		marker.setAnimation(google.maps.Animation.BOUNCE);
 		setTimeout(function(){
 			marker.setAnimation(null);
-		}, 500)
+		}, 500);
 	});
 
-	self.toggleClick = function(){
-		let marker = self.marker;
-		marker.setAnimation(google.maps.Animation.BOUNCE);
-		setTimeout(function(){
-			marker.setAnimation(null);
-		}, 500)
-	};
+
 };
+
+ListItem.prototype.toggleClick = function() {
+
+	var self = this;
+	if (self.content.length < 1){
+		foursquareJSON(self.marker.getPosition().lat(), self.marker.getPosition().lng(), self);
+	}
+	else{
+		infowindow.setContent(self.content);
+		infowindow.open(map, self.marker);
+	}
+	let marker = self.marker;
+	marker.setAnimation(google.maps.Animation.BOUNCE);
+	setTimeout(function(){
+		marker.setAnimation(null);
+	}, 500);
+	};
 
 var ViewModel = function(){
 
@@ -117,7 +128,7 @@ var ViewModel = function(){
 				if (self.vmList()[i].name().indexOf(textVal) < 0){
 					self.vmList.remove(self.vmList()[i]);
 				}
-			};
+			}
 		}
 		loadMarkers(self.vmList);
 
@@ -127,6 +138,7 @@ var ViewModel = function(){
 
 //Instantiate Markers
 var insList = function(list){
+
 	list.removeAll();
 	liArr.forEach(function(li){
 		list.push(li);
@@ -136,6 +148,7 @@ var insList = function(list){
 
 // Function to load the filtered markers into the map and adjust bounds accordingly
 function loadMarkers(list){
+
 	var bounds = new google.maps.LatLngBounds();
 	liArr.forEach(function(el){
 		if (list.indexOf(el) >= 0){
@@ -145,7 +158,7 @@ function loadMarkers(list){
 		else {
 			el.marker.setVisible(false);
 		}
-	})
+	});
 	// Adjust the map zoom level so that all the markers are showing
 	if (!bounds.isEmpty()){
 		map.fitBounds(bounds);
@@ -154,14 +167,7 @@ function loadMarkers(list){
 		insList(app.viewModel.vmList);
 	}
 
-};
-
-//StackOverflow answer for finding if two arrays have same object
-var findOne = function (haystack, arr) {
-	return arr.some(function (v) {
-		return haystack.indexOf(v) >= 0;
-	});
-};
+}
 
 var app = { viewModel: new ViewModel() };
 ko.applyBindings(app.viewModel);
