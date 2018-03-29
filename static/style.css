@@ -41,12 +41,12 @@ body{
 }
 #finput{
 	height:30px;
-	width:70%;
+	width:100%;
 	padding:0;
 	border:none;
 	outline:none;
 }
-#fbutton{
+/*#fbutton{
 	height:30px;
 	width:30%;
 	padding:0;
@@ -54,7 +54,7 @@ body{
 	background-color:black;
 	color:#77c9d4;
 	outline:none;
-}
+}*/
 #title{
 	line-height:5vh;
 	padding-left:2%;

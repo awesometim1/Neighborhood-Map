@@ -15,7 +15,7 @@
 		<div id="list">
 			<div class="filter">
 				<input type="text" id="finput" data-bind="textInput: textVal">
-				<button id="fbutton" type="button" data-bind="click: filterList"><i class="fas fa-filter"></i> <strong>Filter</strong></button>
+				<!-- <button id="fbutton" type="button" data-bind="click: filterList"><i class="fas fa-filter"></i> <strong>Filter</strong></button> -->
 			</div>
 			<ul class="restaurants" data-bind="foreach: vmList">
 				<li class="ritem" data-bind="text: name, click: toggleClick"></li>
@@ -35,11 +35,6 @@
 	<script async defer
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoIsa3nKc32WfrOR07mHu0C_eOWPX44Sg&callback=initMap"
 	onerror="googleError()">
-	</script>
-	<script>
-		function googleError(){
-			alert("Google Map API could not be loaded.")
-		}
 	</script>
 	<!-- Font Awesome -->
 	<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/solid.js" integrity="sha384-+Ga2s7YBbhOD6nie0DzrZpJes+b2K1xkpKxTFFcx59QmVPaSA8c7pycsNaFwUK6l" crossorigin="anonymous"></script>

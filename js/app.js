@@ -97,19 +97,10 @@ var ListItem = function(marker, mObj){
 ListItem.prototype.toggleClick = function() {
 
 	var self = this;
-	if (self.content.length < 1){
-		foursquareJSON(self.marker.getPosition().lat(), self.marker.getPosition().lng(), self);
-	}
-	else{
-		infowindow.setContent(self.content);
-		infowindow.open(map, self.marker);
-	}
-	let marker = self.marker;
-	marker.setAnimation(google.maps.Animation.BOUNCE);
-	setTimeout(function(){
-		marker.setAnimation(null);
-	}, 500);
-	};
+
+	google.maps.event.trigger(self.marker, 'click')
+
+};
 
 var ViewModel = function(){
 
@@ -119,13 +110,17 @@ var ViewModel = function(){
 
 	self.textVal = ko.observable("");
 
+	self.textVal.subscribe(function(){
+		self.filterList();
+	})
+
 	// Function to filter the list. Makes use of external functions loadMarkers, insMarkers, and removeMarkers
 	self.filterList = function(){
 		let textVal = self.textVal();
 		insList(self.vmList);
 		if (textVal.length > 0){
 			for (var i = self.vmList().length-1; i >= 0; i--){
-				if (self.vmList()[i].name().indexOf(textVal) < 0){
+				if (self.vmList()[i].name().toLowerCase().indexOf(textVal.toLowerCase()) < 0){
 					self.vmList.remove(self.vmList()[i]);
 				}
 			}
@@ -164,10 +159,16 @@ function loadMarkers(list){
 		map.fitBounds(bounds);
 	}
 	if(app.viewModel.vmList().length < 1){
-		insList(app.viewModel.vmList);
+		if(app.viewModel.textVal().length < 1){
+			insList(app.viewModel.vmList);
+		}
 	}
 
 }
+//Google maps api error handler
+function googleError(){
+			alert("Google Map API could not be loaded.")
+		}
 
 var app = { viewModel: new ViewModel() };
 ko.applyBindings(app.viewModel);
